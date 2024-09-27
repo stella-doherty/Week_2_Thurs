@@ -4,6 +4,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+library(tidyverse)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -12,29 +13,41 @@ Use [diamonds](https://ggplot2.tidyverse.org/reference/diamonds.html) example ta
 
 Select only `price`, `cut`, and `color` columns. Use piping and `select`.
 ```{r exercise 01-1}
+diamonds %>% 
+  select(price, cut, color)
 ```
 
 Select only `price`, `cut`, and `color` columns. Use base R (no piping or select).
 ```{r exercise 01-2}
+diamonds[colnames(diamonds) %in% c('price', 'cut',  'color')]
 ```
 
 Select all columns except for `x`, `y`, and `z`. Use negative selection and piping.
 ```{r exercise 01-3}
+diamonds
+
+diamonds %>% 
+  select(-x, -y, -z)
+  
 ```
 
 Check out the help page for the `select()` function. Use `:` notation to select columns from `carat` till `clarity`.
 ```{r exercise 01-4}
+diamonds %>% 
+  select(carat:clarity)
 ```
 
 And now select these same columns by capitalising on the fact that all their names (and none of the others) start with the letter "c".
 
 ```{r exercise 01-5}
-
+diamonds %>% 
+  select(starts_with("c"))
 ```
 
 BONUS: How would you select these 4 columns in base R, without simply listing their names?
 
 ```{r exercise 01-6}
+diamonds[,1:4]
 
 ```
 
@@ -44,13 +57,13 @@ Examine the code and decide on whether a condition will be `TRUE` or `FALSE`. Wr
 
 **Answer 1:**
 ```{r exercise 02-1}
-x <- 4
+x <- 4 # TRUE
 (x > 3)
 ```
 
 **Answer 2:**
 ```{r exercise 02-2}
-x <- 4
+x <- 4 # TRUE
 y <- 5
 (x != y)
 ```
@@ -59,13 +72,13 @@ Examine the code and decide on whether a condition will be `TRUE` or `FALSE`. Wr
 
 **Answer 1:**
 ```{r exercise 03-1}
-x <- 4
+x <- 4 # TRUE
 !(x < 3)
 ```
 
 **Answer 2:**
 ```{r exercise 03-2}
-x <- 4
+x <- 4 # FALSE
 y <- 5
 !(x != y)
 ```
@@ -75,27 +88,27 @@ Examine the code and decide on whether a condition will be `TRUE` or `FALSE`. Wr
 
 **Answer 1:**
 ```{r exercise 03-1}
-x <- 4
+x <- 4 #TRUE
 (x < 3) | (x >=4)
 ```
 
 **Answer 2:**
 ```{r exercise 04-2}
-x <- 4
+x <- 4. # TRUE
 y <- 6
 (x == y) | ((x < 5) & (y > 5))
 ```
 
 **Answer 3:**
 ```{r exercise 04-3}
-x <- 3
+x <- 3 # FALSE
 y <- 3
 (x != y) & ((x <= 3) & (y >= 3))
 ```
 
 **Answer 4:**
 ```{r exercise 04-4}
-x <- 3
+x <- 3 # TRUE
 y <- 3
 (x != y) | ((x <= 3) & (y >= 3))
 ```
@@ -104,27 +117,27 @@ Examine the code and decide on whether a condition will be `TRUE` or `FALSE`. Wr
 
 **Answer 1:**
 ```{r exercise 05-1}
-x <- seq(-4, 4, 2)
+x <- seq(-4, 4, 2) # F F T F F
 (x == 0)
 ```
 **Answer 2:**
 ```{r exercise 05-2}
 x <- seq(-4, 4, 2)
 y <- 1:5
-(x + y <= 0)
+(x + y <= 0) # T T F F F 
 ```
 
 **Answer 3:**
 ```{r exercise 05-3}
 x <- seq(-4, 12, 4)
 y <- 1:5
-(x > y)
+(x > y) # F F T T T
 ```
 **Answer 4:**
 ```{r exercise 05-4}
 x <- seq(-4, 12, 4)
 y <- 1:5
-(x > y) & ((x < 10) | (y < 3))
+(x > y) & ((x < 10) | (y < 3)) # F F T T !T
 ```
 ## Exercise 06: logical indexing
 
@@ -132,6 +145,7 @@ Use logical indexing to values of `x` that are above 3.
 ```{r exercise 06-1}
 x <- -3:7
 # Your code goes here
+(x > 3)
 ```
 
 Use logical indexing to extract values of `x` when it is higher than value in `y`
@@ -139,12 +153,16 @@ Use logical indexing to extract values of `x` when it is higher than value in `y
 x <- -3:7
 y <- seq(5, -2, length.out = 11)
 # Your code goes here
+(x > y)
+x[x>y]
 ```
 
 Use logical indexing to extract values of `x` that are greater than the mean value of x (avoid using intermediate variables).
 ```{r exercise 06-3}
 x <- -3:7
 # Your code goes here
+(x > mean(x))
+x[x > mean(x)]
 ```
 
 ## Exercise 07: filter
@@ -152,18 +170,26 @@ Use [msleep](https://ggplot2.tidyverse.org/reference/msleep.html) example table 
 
 Filter the table to keep only `"domesticated"` animals (variable name is `conservation`).
 ```{r exercise 07-1}
+msleep %>% 
+  filter(conservation %in% c("domesticated"))
 ```
 
 Filter the table to keep only the omnivores (`vore`) that sleep more than 10 hours in total.
 ```{r exercise 07-2}
+msleep %>% 
+  filter(vore == "omni" & sleep_total > 10)
 ```
 
 Filter the table to exclude animals with body weight above `50`.
 ```{r exercise 07-3}
+msleep %>% 
+  filter(bodywt <= 50)
 ```
 
 Filter the table to exclude animals with body weight below [median](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/median.html) body weight. Hint, you do not need a temporary variable. 
 ```{r exercise 07-4}
+msleep %>% 
+  filter(bodywt >= median(bodywt))
 ```
 
 
@@ -172,17 +198,24 @@ Use [presidential](https://ggplot2.tidyverse.org/reference/presidential.html) ex
 
 Arrange the table by party.
 ```{r exercise 08-1}
-
+presidential %>% 
+  sort_by(presidential$party) 
 ```
 
 Arrange the table by start date in the descending order.
 ```{r exercise 08-2}
+presidential %>% 
+  sort_by(desc(presidential$start))
+
+presidential %>% 
+  arrange(desc(start))
 
 ```
 
 Arrange the table by party (descending order) and president's name (ascending order).
 ```{r exercise 08-3}
-
+presidential %>% 
+  arrange(desc(party), name)
 ```
 
 
@@ -192,17 +225,26 @@ Use [msleep](https://ggplot2.tidyverse.org/reference/msleep.html) example table 
 
 Compute new variable / column with sleep to body weight ratio.
 ```{r exercise 10-1}
+sleep_bodywt <- msleep %>% 
+  mutate(sleep_bodywt = sleep_total/bodywt)
 ```
 
 Compute new variable / column `is_big` of logical value that are `TRUE` if body weight is above `50`.
 ```{r exercise 10-2}
+sleep_bodywt = sleep_bodywt %>% 
+  mutate(is_big = if_else(bodywt > 50, TRUE, FALSE))
 ```
 
 Compute three new variables / columns. First, compute the _mean_ and _standard deviation_ of total sleep variable. You will get the same value in all the rows, make sure that your columns are _not_ called `mean` and `sd`. Then compute a z-score of the total sleep: $Z(x) = (x - mean(x)) / sd(x)$. Put all computations into a single mutate code.
 ```{r exercise 10-3}
+sleep_bodywt = sleep_bodywt %>% 
+  mutate(mean_sleep = mean(sleep_total), sd_sleep = sd(sleep_total), z_sleep = (sleep_total - mean(sleep_total)) / sd(sleep_total))
 ```
 
 Compute z-score for body weight variable, do not store mean and standard deviation in extra columns but use them directly.
 ```{r exercise 10-4}
+sleep_bodywt = sleep_bodywt %>% 
+  mutate(z_bwt = (bodywt - mean(bodywt)) / sd(bodywt))
+
 ```
 

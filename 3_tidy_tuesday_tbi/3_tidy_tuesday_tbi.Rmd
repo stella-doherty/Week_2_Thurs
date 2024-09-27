@@ -35,12 +35,18 @@ Now, set up folders in your working directory: raw_data, scripts, plots and tabl
 Save both datasets in the raw_data folder (use the 'here' library)
 
 ```{r saving-data-locally}
-
+write_csv(tbi_age, here("raw_data", "tbi_age.csv"))
+write_csv(tbi_year, here("raw_data", "tbi_year.csv"))
 ```
 
 
 ### Task 2
 Use your favourite functions for eyeballing data and write a couple of sentences about each dataset (its dimensions, the variables inside, types of data, etc.)
+ 
+```{r saving-data-locally}
+str(tbi_age) #231 by 5 (age_group, type, injury_mechanism, number_est, rate_est)
+str(tbi_year) #216 by 5 (injury_mechanism, type, year, rate_est, number_est)
+```
 
 ### Task 3
 Imagine that you are preparing a brief for the local health authority, and they have asked you to answer the following questions. For each question, write a chunk of code that would provide the answer in a clean and reproducible way.
@@ -49,6 +55,13 @@ Imagine that you are preparing a brief for the local health authority, and they 
 Which injury mechanism caused the most deaths in total?
 
 ```{r most-deaths}
+tbi_year %>% 
+  ggplot(aes(x = injury_mechanism, y = number_est, fill = injury_mechanism))+
+  geom_col()
+
+tbi_year %>% 
+  group_by(injury_mechanism) %>% 
+  summarise(sum(number_est))
 
 ```
 
@@ -57,13 +70,28 @@ Looking just at the totals, what is the number of ED visits, hospitalisations an
 associated with each injury mechanism? Present the results as a table. Save this table in your tables folder.
 
 ```{r totals-table}
-  
+library(gt)
+
+tbi_year %>% 
+  group_by(injury_mechanism, type) %>% 
+  summarise('Total' = sum(number_est)) %>% 
+  pivot_wider(names_from = type, values_from = Total) %>% 
+  gt() %>% 
+  tab_header(title= "Health System Interactions by TBI Mechanism")
+
 ```
 ### Task 3.3
 Focusing on the oldest age group (75+), draw a bar chart illustrating the number of hospitalisations associated with each injury mechanism. Make sure that you add a title and appropriate axis labels. Save this chart in your plots folder.
 
 ```{r oldest-hospitalisations}
 
+
+tbi_age %>% 
+  filter(age_group == "75+", type == "Hospitalizations") %>% 
+  ggplot(aes(x = injury_mechanism, y = number_est, fill = injury_mechanism))+
+  geom_col()+
+  labs(x = "Injury Mechanism", y = "Number of Hospitalisations", fill = "Injury Mechanism")+
+  ggtitle("TBI Hospitalisations by Mechanism of Injuries")
 ```
 
 

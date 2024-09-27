@@ -66,5 +66,10 @@ sd(starstat$x, na.rm = FALSE)
 sd(starstat$y, na.rm = FALSE)
 #mean: x=54.27, y=47.84
 #SD: x=16.77 , y=26.93
+
+datasaurus_dozen %>% 
+  filter(dataset == "dino" | dataset =="star") %>% 
+  group_by(dataset) %>% 
+  summarise(mean_x= mean(x), sd_x = (sd(x)), mean_y = mean(y), sd_y = sd(y))
 ```
 
